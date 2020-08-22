@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,7 @@ namespace Photo512Converter
 
         static void Start()
         {
-            Console.Write("Введите макс. размер одной из старон:");
+            Console.Write("Введите макс. размер одной из сторон:");
             int max_new_image_side = GetInt();
 
             DirectoryInfo dir;
@@ -35,6 +36,16 @@ namespace Photo512Converter
                     break;
                 else
                     Console.WriteLine("Путь не найден");
+            }
+            string FormatMode;
+            while (true)
+            {
+                Console.WriteLine("Выберите формат сохранения 1 - jpeg, 2 - png, 3 - bmp");
+                FormatMode = Console.ReadLine();
+                if (FormatMode == "1" || FormatMode == "2" || FormatMode == "3")
+                    break;
+                FormatMode = String.Empty;
+                    
             }
 
             DirectoryInfo directory = new DirectoryInfo(dir.FullName + @"\Result");
@@ -51,8 +62,18 @@ namespace Photo512Converter
                 int new_height = (int)(image.Height * coeff);
                 int new_width = (int)(image.Width * coeff);
                 Bitmap new_image = new Bitmap(image, new Size(new_width, new_height));
+                switch (FormatMode) {
+                    case "1":
+                        new_image.Save(directory.FullName + @"\" + new FileInfo(file).Name + ".jpeg" , ImageFormat.Jpeg);
+                        break;
+                    case "2":
+                        new_image.Save(directory.FullName + @"\" + new FileInfo(file).Name + ".png" , ImageFormat.Png);
+                        break;
+                    case "3":
+                        new_image.Save(directory.FullName + @"\" + new FileInfo(file).Name + ".bmp", ImageFormat.Bmp);
+                        break;
 
-                new_image.Save(directory.FullName + @"\" + new FileInfo(file).Name);
+                }
             }
         }
 
