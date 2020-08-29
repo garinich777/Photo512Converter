@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Photo512Converter
 {
+    enum ImageFormatEnum { JPG = 1, PNG, BMP}
     class Program
     {
         static void Main(string[] args)
@@ -37,16 +38,8 @@ namespace Photo512Converter
                 else
                     Console.WriteLine("Путь не найден");
             }
-            string FormatMode;
-            while (true)
-            {
-                Console.WriteLine("Выберите формат сохранения 1 - jpeg, 2 - png, 3 - bmp");
-                FormatMode = Console.ReadLine();
-                if (FormatMode == "1" || FormatMode == "2" || FormatMode == "3")
-                    break;
-                FormatMode = String.Empty;
-                    
-            }
+            string expansion;
+            ImageFormat image_format = GetImageFormat(out expansion);
 
             DirectoryInfo directory = new DirectoryInfo(dir.FullName + @"\Result");
             for (int i = 1; directory.Exists; i++)
@@ -62,27 +55,41 @@ namespace Photo512Converter
                 int new_height = (int)(image.Height * coeff);
                 int new_width = (int)(image.Width * coeff);
                 Bitmap new_image = new Bitmap(image, new Size(new_width, new_height));
-                switch (FormatMode) {
-                    case "1":
-                        new_image.Save(directory.FullName + @"\" + new FileInfo(file).Name + ".jpeg" , ImageFormat.Jpeg);
-                        break;
-                    case "2":
-                        new_image.Save(directory.FullName + @"\" + new FileInfo(file).Name + ".png" , ImageFormat.Png);
-                        break;
-                    case "3":
-                        new_image.Save(directory.FullName + @"\" + new FileInfo(file).Name + ".bmp", ImageFormat.Bmp);
-                        break;
-
-                }
+                new_image.Save(directory.FullName + @"\" + new FileInfo(file).Name + expansion, image_format);
             }
         }
 
         static int GetInt()
         {
-            int value = 0;
+            int value;
             while ( ! int.TryParse(Console.ReadLine(), out value))
                 Console.Write(Environment.NewLine + "Некорректный ввод:");
             return value;
+        }
+
+        static ImageFormat GetImageFormat(out string expansion)
+        {
+            ImageFormatEnum image_format;
+            while (true)
+            {
+                Console.Write("Выберите формат сохранения 1-jpg, 2-png, 3-bmp: ");
+                image_format = (ImageFormatEnum)GetInt();
+                switch (image_format)
+                {
+                    case ImageFormatEnum.JPG:
+                        expansion = ".jpg";
+                        return ImageFormat.Jpeg;
+                    case ImageFormatEnum.PNG:
+                        expansion = ".png";
+                        return ImageFormat.Png;
+                    case ImageFormatEnum.BMP:
+                        expansion = ".bmp";
+                        return ImageFormat.Bmp;
+                    default:
+                        Console.WriteLine("Некорректный ввод");
+                        break;
+                }                
+            }
         }
 
         static List<string> GetAllFile(string dir_path)
